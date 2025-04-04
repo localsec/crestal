@@ -170,7 +170,7 @@ function centerText(text, color = "cyanBright") {
 }
 
 (async () => {
-  cfonts.say("NT Exhaust", {
+  cfonts.say("LocalSec", {
     font: "block",
     align: "center",
     colors: ["cyan", "magenta"],
@@ -180,8 +180,8 @@ function centerText(text, color = "cyanBright") {
     space: true,
     maxLength: "0",
   });
-  console.log(centerText("=== Kênh Telegram 🚀 : NT Exhaust (@NTExhaust) ==="));
-  console.log(centerText("⌞👤 Mod : @NT_Exhaust⌝ \n"));
+  console.log(centerText("=== Twitter: 🚀 : https://x.com/Local_sec ==="));
+  console.log(centerText("⌞👤 Tool Created by NT Exhaust- Phát triển bởi: LocalSec"));
   const loopCount = await askLoopCount();
   await startLoop(loopCount);
 })();
