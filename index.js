@@ -9,11 +9,14 @@ import cfonts from "cfonts";
 dotenv.config();
 
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const AGENT_ID = process.env.AGENT_ID;
+let AGENT_ID = process.env.AGENT_ID; // Bắt đầu với AGENT_ID từ .env
 const TOKEN = process.env.TOKEN;
 const BASE_URL = 'https://api.service.crestal.network/v1';
-const CHAT_ID = `${WALLET_ADDRESS}-${AGENT_ID}`;
+let CHAT_ID = `${WALLET_ADDRESS}-${AGENT_ID}`; // Cập nhật CHAT_ID khi AGENT_ID thay đổi
 const MAX_LENGTH = 1000;
+
+// Danh sách các AGENT_ID để thay đổi (giả định có sẵn hoặc thêm vào .env)
+const AGENT_IDS = process.env.AGENT_IDS ? process.env.AGENT_IDS.split(',') : [AGENT_ID];
 
 const headersPost = {
   'Content-Type': 'application/json',
@@ -88,9 +91,17 @@ async function sendMessage(message) {
   const postData = await safeJson(postRes);
 
   for (const msg of postData) {
-    console.log(chalk.green(`\n🟢 Tin nhắn được gửi bởi đại lý ${chalk.cyan(msg.agent_id)}:`));
+    console.log(chalk.green(`\n🟢 Tin nhắn được gửi bởi Agent ${chalk.cyan(msg.agent_id)}:`));
     console.log(chalk.yellow(`"${msg.message}"`));
   }
+}
+
+// Hàm thay đổi AGENT_ID ngẫu nhiên
+function switchAgent() {
+  const randomIndex = Math.floor(Math.random() * AGENT_IDS.length);
+  AGENT_ID = AGENT_IDS[randomIndex];
+  CHAT_ID = `${WALLET_ADDRESS}-${AGENT_ID}`; // Cập nhật CHAT_ID
+  console.log(chalk.blue(`🔄 Đã chuyển sang Agent mới: ${AGENT_ID}`));
 }
 
 async function startLoop(loopCount) {
@@ -105,7 +116,7 @@ async function startLoop(loopCount) {
       .filter(line => line.length > 0);
     spinner.succeed(`Đã tải ${allMessages.length} tin nhắn.`);
 
-    // Report activities
+    // Báo cáo hoạt động
     const activityTypes = [
       'interact_with_crestal_x',
       'feedback',
@@ -117,11 +128,12 @@ async function startLoop(loopCount) {
       await reportActivity(type);
     }
 
-    // Message loop
+    // Vòng lặp tin nhắn
     for (let i = 1; i <= loopCount; i++) {
       const message = allMessages[Math.floor(Math.random() * allMessages.length)];
       console.log(chalk.magenta(`\n📩 [${i}/${loopCount}] Đang gửi tin nhắn: "${message}"`));
       await sendMessage(message);
+      switchAgent(); // Thay đổi Agent sau mỗi tin nhắn
       await sleep(5000); // đợi 5 giây giữa mỗi bài đăng
     }
 
@@ -138,8 +150,8 @@ async function startLoop(loopCount) {
     console.log(`- Hạng: ${rank}`);
     console.log(`- Tổng điểm: ${total_point}`);
     console.log(`- Tổng điểm V1: ${total_point_v1}`);
-    console.log(chalk.bgGreen.black(`✅ Đã hoàn thành ${loopCount} tin nhắn. Đợi 24 giờ để lặp lại...\n`));
-    await sleep(24 * 60 * 60 * 1000); // đợi 24 giờ
+    console.log(chalk.bgGreen.black(`✅ Đã hoàn thành ${loopCount} tin nhắn. Đợi 12 giờ để lặp lại...\n`));
+    await sleep(12 * 60 * 60 * 1000); // đợi 12 giờ
   }
 }
 
@@ -170,7 +182,7 @@ function centerText(text, color = "cyanBright") {
 }
 
 (async () => {
-  cfonts.say("LocalSec", {
+  cfonts.say("NT Exhaust", {
     font: "block",
     align: "center",
     colors: ["cyan", "magenta"],
@@ -180,8 +192,8 @@ function centerText(text, color = "cyanBright") {
     space: true,
     maxLength: "0",
   });
-  console.log(centerText("=== Twitter: 🚀 : https://x.com/Local_sec ==="));
-  console.log(centerText("⌞👤 Tool Created by NT Exhaust- Phát triển bởi: LocalSec"));
+  console.log(centerText("=== Kênh Telegram 🚀 : NT Exhaust (@NTExhaust) ==="));
+  console.log(centerText("⌞👤 Mod : @NT_Exhaust⌝ \n"));
   const loopCount = await askLoopCount();
   await startLoop(loopCount);
 })();
