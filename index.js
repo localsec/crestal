@@ -30,9 +30,9 @@ const headersGet = {
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-// Hàm tạo AGENT_ID ngẫu nhiên (giả định ID là số từ 1 đến 1000)
+// Hàm tạo AGENT_ID ngẫu nhiên từ 1 đến 634
 function generateRandomAgentId() {
-  return Math.floor(Math.random() * 1000) + 1; // Tạo số ngẫu nhiên từ 1 đến 1000
+  return Math.floor(Math.random() * 634) + 1; // Tạo số ngẫu nhiên từ 1 đến 634
 }
 
 async function safeJson(res) {
@@ -193,8 +193,8 @@ function centerText(text, color = "cyanBright") {
     space: true,
     maxLength: "0",
   });
-  console.log(centerText("=== Kênh Telegram 🚀 : NT Exhaust (@NTExhaust) ==="));
-  console.log(centerText("⌞👤 Mod : @NT_Exhaust⌝ \n"));
+  console.log(centerText("=== LocalSec ==="));
+  console.log(centerText("⌞👤 X: https://x.com/Local_sec"));
   const loopCount = await askLoopCount();
   await startLoop(loopCount);
 })();
