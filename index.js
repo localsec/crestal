@@ -9,14 +9,11 @@ import cfonts from "cfonts";
 dotenv.config();
 
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-let AGENT_ID = process.env.AGENT_ID; // Bắt đầu với AGENT_ID từ .env
+let AGENT_ID = generateRandomAgentId(); // Khởi tạo AGENT_ID ngẫu nhiên ban đầu
 const TOKEN = process.env.TOKEN;
 const BASE_URL = 'https://api.service.crestal.network/v1';
 let CHAT_ID = `${WALLET_ADDRESS}-${AGENT_ID}`; // Cập nhật CHAT_ID khi AGENT_ID thay đổi
 const MAX_LENGTH = 1000;
-
-// Danh sách các AGENT_ID để thay đổi (giả định có sẵn hoặc thêm vào .env)
-const AGENT_IDS = process.env.AGENT_IDS ? process.env.AGENT_IDS.split(',') : [AGENT_ID];
 
 const headersPost = {
   'Content-Type': 'application/json',
@@ -32,6 +29,11 @@ const headersGet = {
 };
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+// Hàm tạo AGENT_ID ngẫu nhiên (giả định ID là số từ 1 đến 1000)
+function generateRandomAgentId() {
+  return Math.floor(Math.random() * 1000) + 1; // Tạo số ngẫu nhiên từ 1 đến 1000
+}
 
 async function safeJson(res) {
   const text = await res.text();
@@ -91,17 +93,16 @@ async function sendMessage(message) {
   const postData = await safeJson(postRes);
 
   for (const msg of postData) {
-    console.log(chalk.green(`\n🟢 Tin nhắn được gửi bởi Agent ${chalk.cyan(msg.agent_id)}:`));
+    console.log(chalk.green(`\n🟢 Tin nhắn được gửi bởi đại lý ${chalk.cyan(msg.agent_id)}:`));
     console.log(chalk.yellow(`"${msg.message}"`));
   }
 }
 
 // Hàm thay đổi AGENT_ID ngẫu nhiên
 function switchAgent() {
-  const randomIndex = Math.floor(Math.random() * AGENT_IDS.length);
-  AGENT_ID = AGENT_IDS[randomIndex];
+  AGENT_ID = generateRandomAgentId();
   CHAT_ID = `${WALLET_ADDRESS}-${AGENT_ID}`; // Cập nhật CHAT_ID
-  console.log(chalk.blue(`🔄 Đã chuyển sang Agent mới: ${AGENT_ID}`));
+  console.log(chalk.blue(`🔄 Đã chuyển sang đại lý mới: ${AGENT_ID}`));
 }
 
 async function startLoop(loopCount) {
@@ -133,7 +134,7 @@ async function startLoop(loopCount) {
       const message = allMessages[Math.floor(Math.random() * allMessages.length)];
       console.log(chalk.magenta(`\n📩 [${i}/${loopCount}] Đang gửi tin nhắn: "${message}"`));
       await sendMessage(message);
-      switchAgent(); // Thay đổi Agent sau mỗi tin nhắn
+      switchAgent(); // Thay đổi đại lý sau mỗi tin nhắn
       await sleep(5000); // đợi 5 giây giữa mỗi bài đăng
     }
 
